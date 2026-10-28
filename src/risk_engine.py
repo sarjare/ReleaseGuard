@@ -891,7 +891,7 @@ class WhatIfResult:
 
     @property
     def improved(self) -> bool:
-        return self.score_delta < 0
+        return bool(self.score_delta < 0)
 
     def summary(self) -> str:
         direction = "↓ improved" if self.improved else "↑ worsened"
@@ -916,6 +916,6 @@ def compare_scenarios(original: RiskResult, alternative: RiskResult) -> WhatIfRe
     return WhatIfResult(
         original=original,
         alternative=alternative,
-        score_delta=alternative.risk_score - original.risk_score,
+        score_delta=float(alternative.risk_score - original.risk_score),
         changed_factors=changed,
     )

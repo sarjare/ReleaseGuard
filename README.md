@@ -220,19 +220,26 @@ These thresholds are visible in `src/risk_engine.py` and can be adjusted.
 - Python 3.11 or compatible installed version
 - pip
 
-### Setup
+### Setup (macOS / Linux)
 
-```powershell
+```bash
 # Clone the repository
-git clone https://github.com/your-org/releaseguard.git
-cd releaseguard
+git clone https://github.com/sarjare/ReleaseGuard.git
+cd ReleaseGuard
 
-# Create and activate a virtual environment (recommended)
-python -m venv .venv
-.venv\Scripts\activate        # Windows PowerShell
-# source .venv/bin/activate   # macOS / Linux
+# Create and activate a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
 
 # Install dependencies
+pip install -r requirements.txt
+```
+
+### Setup (Windows PowerShell)
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
@@ -240,7 +247,11 @@ pip install -r requirements.txt
 
 ## Running the Application
 
-```powershell
+```bash
+# Activate virtual environment if not already active
+source .venv/bin/activate
+
+# Launch the Streamlit dashboard
 streamlit run app.py
 ```
 
@@ -250,17 +261,20 @@ The app opens at `http://localhost:8501`.
 
 ## Running Tests
 
-```powershell
+Execute the full automated test suite (76 tests across unit, integration, and UI):
+
+```bash
+# Run all tests
 pytest tests/ -v
+
+# Run specific test modules:
+pytest tests/test_data_loader.py -v     # Data loading & validation tests
+pytest tests/test_risk_engine.py -v     # SLO math & risk engine tests
+pytest tests/test_dashboard_ui.py -v    # Streamlit UI component & AppTest tests
+pytest tests/test_integration.py -v     # Full end-to-end integration tests
 ```
 
-Expected output: all tests pass with no errors.
-
-To see a coverage summary:
-```powershell
-pip install pytest-cov
-pytest tests/ -v --cov=src --cov-report=term-missing
-```
+Expected output: `76 passed in ~3s`.
 
 ---
 
