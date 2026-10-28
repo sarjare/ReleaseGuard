@@ -1,0 +1,10 @@
+incident_id,date,service,related_release,severity,duration_min,summary
+INC-2001,2026-10-02,user-api,REL-1001,Major,20,Service degradation
+INC-2002,2026-10-04,search-api,REL-1003,Major,10,Service degradation
+INC-2003,2026-10-05,user-api,REL-1004,Major,20,Service degradation
+INC-2004,2026-10-10,payment-api,REL-1008,Critical,30,Timeouts increased
+INC-2005,2026-10-14,notification-api,REL-1013,Major,60,Timeouts increased
+INC-2006,2026-10-15,user-api,REL-1014,Major,10,Elevated error rate
+INC-2007,2026-10-17,auth-api,REL-1016,Major,20,Failed requests after deployment
+INC-2008,2026-10-22,auth-api,REL-1019,Minor,90,Service degradation
+INC-2009,2026-10-27,auth-api,REL-1024,Minor,20,Increased latency

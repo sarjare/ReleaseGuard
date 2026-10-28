@@ -1,0 +1,25 @@
+release_id,date,deployment_hour,service,files_changed,lines_changed,affected_services,author_tenure_months,change_type,release_notes
+REL-1001,2026-10-02,17,user-api,4,308,3,12,bugfix,Payment flow adjustment
+REL-1002,2026-10-03,9,user-api,8,920,1,3,refactor,Authentication change
+REL-1003,2026-10-04,17,search-api,12,924,1,18,dependency_update,Cache configuration update
+REL-1004,2026-10-05,15,user-api,6,504,3,12,refactor,Search indexing improvement
+REL-1005,2026-10-06,21,search-api,25,2625,2,36,refactor,Payment flow adjustment
+REL-1006,2026-10-07,13,search-api,6,624,1,24,bugfix,API validation update
+REL-1007,2026-10-08,9,payment-api,18,1296,1,1,feature,Cache configuration update
+REL-1008,2026-10-09,22,payment-api,6,192,1,18,dependency_update,Search indexing improvement
+REL-1009,2026-10-10,11,notification-api,6,720,2,2,bugfix,Authentication change
+REL-1010,2026-10-11,14,auth-api,32,4640,1,36,feature,Search indexing improvement
+REL-1011,2026-10-12,22,search-api,12,1512,1,8,bugfix,Search indexing improvement
+REL-1012,2026-10-13,19,auth-api,8,432,1,3,dependency_update,Notification retry update
+REL-1013,2026-10-14,21,notification-api,8,1424,2,24,bugfix,Authentication change
+REL-1014,2026-10-15,21,user-api,6,858,1,2,feature,Cache configuration update
+REL-1015,2026-10-16,11,user-api,4,664,3,3,bugfix,Authentication change
+REL-1016,2026-10-17,22,auth-api,6,702,2,12,feature,API validation update
+REL-1017,2026-10-19,21,payment-api,4,500,1,24,refactor,Cache configuration update
+REL-1018,2026-10-20,19,search-api,18,1512,2,1,refactor,Notification retry update
+REL-1019,2026-10-21,15,auth-api,18,2610,2,12,dependency_update,Cache configuration update
+REL-1020,2026-10-22,10,user-api,25,3925,1,12,feature,Authentication change
+REL-1021,2026-10-23,9,user-api,8,712,3,2,dependency_update,Authentication change
+REL-1022,2026-10-24,13,search-api,4,232,1,5,bugfix,Authentication change
+REL-1023,2026-10-25,10,notification-api,6,714,1,5,bugfix,Cache configuration update
+REL-1024,2026-10-27,19,auth-api,12,2124,3,18,refactor,Notification retry update

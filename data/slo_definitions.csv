@@ -1,0 +1,6 @@
+service,slo_target,sli_type,description
+payment-api,99.9,availability,Processes payments
+auth-api,99.95,availability,Handles authentication
+user-api,99.9,availability,Manages user profiles
+search-api,99.5,availability,Provides search functionality
+notification-api,99.9,availability,Sends notifications
