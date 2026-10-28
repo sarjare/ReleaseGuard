@@ -337,14 +337,15 @@ def factor_breakdown_chart(factors: list[RiskFactor]) -> go.Figure:
             textfont=dict(color=COLORS["text"], size=11),
         )
     )
-    fig.update_layout(
+    layout = {
         **PLOTLY_LAYOUT,
-        height=320,
-        title=dict(text="Risk Factor Contributions (% of max weight)", font=dict(size=13)),
-        xaxis=dict(title="% of factor weight", range=[0, 115], **PLOTLY_LAYOUT["xaxis"]),
-        yaxis=dict(title="", **PLOTLY_LAYOUT["yaxis"]),
-        showlegend=False,
-    )
+        "height": 320,
+        "title": dict(text="Risk Factor Contributions (% of max weight)", font=dict(size=13)),
+        "xaxis": {**PLOTLY_LAYOUT["xaxis"], "title": "% of factor weight", "range": [0, 115]},
+        "yaxis": {**PLOTLY_LAYOUT["yaxis"], "title": ""},
+        "showlegend": False,
+    }
+    fig.update_layout(**layout)
     return fig
 
 
@@ -452,13 +453,14 @@ def error_rate_trend(service: str, metrics: pd.DataFrame, slo_target: Optional[f
             annotation_font_color=COLORS["coral"],
         )
 
-    fig.update_layout(
+    layout = {
         **PLOTLY_LAYOUT,
-        height=300,
-        title=dict(text=f"Daily Error Rate — {service}", font=dict(size=13)),
-        xaxis=dict(title="Date", **PLOTLY_LAYOUT["xaxis"]),
-        yaxis=dict(title="Error Rate (%)", **PLOTLY_LAYOUT["yaxis"]),
-    )
+        "height": 300,
+        "title": dict(text=f"Daily Error Rate — {service}", font=dict(size=13)),
+        "xaxis": {**PLOTLY_LAYOUT["xaxis"], "title": "Date"},
+        "yaxis": {**PLOTLY_LAYOUT["yaxis"], "title": "Error Rate (%)"},
+    }
+    fig.update_layout(**layout)
     return fig
 
 
@@ -485,14 +487,15 @@ def request_volume_chart(service: str, metrics: pd.DataFrame) -> go.Figure:
             hovertemplate="Date: %{x|%b %d}<br>Failed: %{y:,}<extra></extra>",
         )
     )
-    fig.update_layout(
+    layout = {
         **PLOTLY_LAYOUT,
-        barmode="stack",
-        height=280,
-        title=dict(text=f"Daily Requests — {service}", font=dict(size=13)),
-        xaxis=dict(title="Date", **PLOTLY_LAYOUT["xaxis"]),
-        yaxis=dict(title="Requests", **PLOTLY_LAYOUT["yaxis"]),
-    )
+        "barmode": "stack",
+        "height": 280,
+        "title": dict(text=f"Daily Requests — {service}", font=dict(size=13)),
+        "xaxis": {**PLOTLY_LAYOUT["xaxis"], "title": "Date"},
+        "yaxis": {**PLOTLY_LAYOUT["yaxis"], "title": "Requests"},
+    }
+    fig.update_layout(**layout)
     return fig
 
 
@@ -564,14 +567,15 @@ def whatif_comparison_chart(comparison: WhatIfResult) -> go.Figure:
             hovertemplate="%{x}<br>Alternative: %{y:.1f} pts<extra></extra>",
         )
     )
-    fig.update_layout(
+    layout = {
         **PLOTLY_LAYOUT,
-        barmode="group",
-        height=340,
-        title=dict(text="Original vs Alternative — Factor Scores", font=dict(size=13)),
-        xaxis=dict(title="", tickangle=-30, **PLOTLY_LAYOUT["xaxis"]),
-        yaxis=dict(title="Points", **PLOTLY_LAYOUT["yaxis"]),
-    )
+        "barmode": "group",
+        "height": 340,
+        "title": dict(text="Original vs Alternative — Factor Scores", font=dict(size=13)),
+        "xaxis": {**PLOTLY_LAYOUT["xaxis"], "title": "", "tickangle": -30},
+        "yaxis": {**PLOTLY_LAYOUT["yaxis"], "title": "Points"},
+    }
+    fig.update_layout(**layout)
     return fig
 
 
