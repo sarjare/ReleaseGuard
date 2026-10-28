@@ -55,6 +55,7 @@ from src.dashboard_components import (
     whatif_comparison_chart,
 )
 from src.data_loader import LoadedData, load_all_data, get_services
+from src.ml_predictor import estimate_release_probability
 from src.risk_engine import (
     BudgetResult,
     THRESHOLD_GO,
@@ -450,6 +451,27 @@ elif page == "🚀 Evaluate Release":
                 incidents=data.incidents,
                 traffic_calendar=data.traffic_calendar,
             )
+
+        ml_prob, ml_status, ml_warning, ml_metrics, ml_features = estimate_release_probability(
+            service=svc,
+            files_changed=int(files_changed),
+            lines_changed=int(lines_changed),
+            affected_services=int(affected_svcs),
+            deploy_date=deploy_date,
+            deploy_hour=int(deploy_hour),
+            service_metrics=data.service_metrics,
+            slo_definitions=data.slo_definitions,
+            release_history=data.release_history,
+            incidents=data.incidents,
+        )
+        if ml_prob is not None:
+            st.caption(
+                f"ML estimate: {ml_prob:.3f} probability of a post-release issue "
+                f"({ml_status})."
+            )
+            st.info(ml_warning)
+        else:
+            st.warning(ml_warning)
 
         # Store for What-If page
         st.session_state["last_result"] = result
