@@ -274,18 +274,16 @@ def _validate_traffic_calendar(df: pd.DataFrame, result: LoadedData) -> pd.DataF
 
 def _cross_validate(data: LoadedData) -> None:
     """Check referential integrity between datasets."""
-    if data.release_history is None or data.incidents is None:
-        return
-
-    release_ids = set(data.release_history["release_id"].dropna())
-    incident_release_refs = set(data.incidents["related_release"].dropna())
-    orphaned = incident_release_refs - release_ids
-    if orphaned:
-        data.warnings.append(
-            f"incidents: {len(orphaned)} incident(s) reference release IDs not found in "
-            f"release_history: {sorted(orphaned)}. These incidents are kept but cannot "
-            f"be linked to release metadata."
-        )
+    if data.release_history is not None and data.incidents is not None:
+        release_ids = set(data.release_history["release_id"].dropna())
+        incident_release_refs = set(data.incidents["related_release"].dropna())
+        orphaned = incident_release_refs - release_ids
+        if orphaned:
+            data.warnings.append(
+                f"incidents: {len(orphaned)} incident(s) reference release IDs not found in "
+                f"release_history: {sorted(orphaned)}. These incidents are kept but cannot "
+                f"be linked to release metadata."
+            )
 
     if data.service_metrics is not None and data.slo_definitions is not None:
         metric_services = set(data.service_metrics["service"].unique())

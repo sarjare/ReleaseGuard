@@ -891,7 +891,7 @@ class WhatIfResult:
 
     @property
     def improved(self) -> bool:
-        return self.score_delta < 0
+        return bool(self.score_delta < 0)
 
     def summary(self) -> str:
         direction = "↓ improved" if self.improved else "↑ worsened"
