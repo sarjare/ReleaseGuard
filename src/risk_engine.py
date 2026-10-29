@@ -916,6 +916,6 @@ def compare_scenarios(original: RiskResult, alternative: RiskResult) -> WhatIfRe
     return WhatIfResult(
         original=original,
         alternative=alternative,
-        score_delta=alternative.risk_score - original.risk_score,
+        score_delta=float(alternative.risk_score - original.risk_score),
         changed_factors=changed,
     )

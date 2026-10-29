@@ -329,3 +329,73 @@ class TestLoadAllData:
         assert services == sorted(services)
         assert len(services) > 0
         assert all(isinstance(s, str) for s in services)
+
+    def test_duplicate_release_id_warns(self):
+        """Duplicate release IDs should trigger a warning."""
+        result = LoadedData()
+        dup_releases = _make_releases_df([
+            {
+                "release_id": "REL-DUP", "date": "2026-10-01", "deployment_hour": 14,
+                "service": "svc-a", "files_changed": 5, "lines_changed": 200,
+                "affected_services": 1, "change_type": "bugfix",
+            },
+            {
+                "release_id": "REL-DUP", "date": "2026-10-02", "deployment_hour": 15,
+                "service": "svc-a", "files_changed": 8, "lines_changed": 400,
+                "affected_services": 1, "change_type": "refactor",
+            },
+        ])
+        _validate_release_history(dup_releases, result)
+        assert any("duplicate release_id" in w.lower() for w in result.warnings)
+
+    def test_duplicate_incident_id_warns(self):
+        """Duplicate incident IDs should trigger a warning."""
+        result = LoadedData()
+        dup_incidents = _make_incidents_df([
+            {
+                "incident_id": "INC-DUP", "date": "2026-10-01", "service": "svc-a",
+                "related_release": "REL-001", "severity": "Major",
+            },
+            {
+                "incident_id": "INC-DUP", "date": "2026-10-02", "service": "svc-a",
+                "related_release": "REL-002", "severity": "Minor",
+            },
+        ])
+        _validate_incidents(dup_incidents, result)
+        assert any("duplicate incident_id" in w.lower() for w in result.warnings)
+
+    def test_unknown_service_in_release_history_warns(self):
+        """Services in release history without SLO definitions should warn."""
+        result = LoadedData()
+        result.release_history = _validate_release_history(
+            _make_releases_df([{"release_id": "REL-X", "date": "2026-10-01", "deployment_hour": 10, "service": "unknown-svc", "files_changed": 1, "lines_changed": 10, "affected_services": 1, "change_type": "bugfix"}]),
+            result,
+        )
+        result.slo_definitions = _validate_slo_definitions(_make_slo_df(), result)
+        _cross_validate(result)
+        assert any("unknown-svc" in w for w in result.warnings)
+
+    def test_missing_required_column_fails_file_load(self, tmp_path):
+        """A CSV missing required columns should record an error and not set DataFrame."""
+        bad_slo = tmp_path / "slo_definitions.csv"
+        bad_slo.write_text("service,description\nsvc-a,only two columns\n")
+        result = LoadedData()
+        from src.data_loader import _load_csv
+        df = _load_csv("slo_definitions", bad_slo, result)
+        assert df is None
+        assert any("missing required columns" in e.lower() for e in result.errors)
+
+    def test_original_csv_files_unmodified(self):
+        """Verify that loading datasets does not mutate files on disk."""
+        import hashlib
+        from src.data_loader import DATA_DIR
+        csv_files = list(DATA_DIR.glob("*.csv"))
+        assert len(csv_files) >= 5
+        hashes_before = {f: hashlib.sha256(f.read_bytes()).hexdigest() for f in csv_files}
+        
+        # Load all data multiple times
+        _ = load_all_data()
+        _ = load_all_data()
+
+        hashes_after = {f: hashlib.sha256(f.read_bytes()).hexdigest() for f in csv_files}
+        assert hashes_before == hashes_after

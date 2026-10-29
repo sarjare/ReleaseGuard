@@ -160,7 +160,7 @@ def _validate_service_metrics(df: pd.DataFrame, result: LoadedData) -> pd.DataFr
     df = df.copy()
 
     # Parse dates
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["date"] = pd.to_datetime(df["date"], errors="coerce", format="mixed")
     bad_dates = df["date"].isna().sum()
     if bad_dates:
         result.warnings.append(
@@ -204,11 +204,19 @@ def _validate_service_metrics(df: pd.DataFrame, result: LoadedData) -> pd.DataFr
 def _validate_release_history(df: pd.DataFrame, result: LoadedData) -> pd.DataFrame:
     df = df.copy()
 
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["date"] = pd.to_datetime(df["date"], errors="coerce", format="mixed")
     df["deployment_hour"] = pd.to_numeric(df["deployment_hour"], errors="coerce")
     df["files_changed"] = pd.to_numeric(df["files_changed"], errors="coerce")
     df["lines_changed"] = pd.to_numeric(df["lines_changed"], errors="coerce")
     df["affected_services"] = pd.to_numeric(df["affected_services"], errors="coerce")
+
+    # Check for duplicate release_id values
+    if "release_id" in df.columns:
+        dups = df[df["release_id"].duplicated(keep=False)]["release_id"].dropna().unique().tolist()
+        if dups:
+            result.warnings.append(
+                f"release_history: duplicate release_id values detected: {dups}."
+            )
 
     bad_dates = df["date"].isna().sum()
     if bad_dates:
@@ -235,8 +243,16 @@ def _validate_release_history(df: pd.DataFrame, result: LoadedData) -> pd.DataFr
 def _validate_incidents(df: pd.DataFrame, result: LoadedData) -> pd.DataFrame:
     df = df.copy()
 
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["date"] = pd.to_datetime(df["date"], errors="coerce", format="mixed")
     df["service"] = df["service"].str.strip()
+
+    # Check for duplicate incident_id values
+    if "incident_id" in df.columns:
+        dups = df[df["incident_id"].duplicated(keep=False)]["incident_id"].dropna().unique().tolist()
+        if dups:
+            result.warnings.append(
+                f"incidents: duplicate incident_id values detected: {dups}."
+            )
 
     if "duration_min" in df.columns:
         df["duration_min"] = pd.to_numeric(df["duration_min"], errors="coerce")
@@ -254,7 +270,7 @@ def _validate_incidents(df: pd.DataFrame, result: LoadedData) -> pd.DataFrame:
 def _validate_traffic_calendar(df: pd.DataFrame, result: LoadedData) -> pd.DataFrame:
     df = df.copy()
 
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["date"] = pd.to_datetime(df["date"], errors="coerce", format="mixed")
 
     # Parse boolean-ish columns — CSV may store "True"/"False" as strings
     for col in ["is_peak", "freeze_period"]:
@@ -274,6 +290,7 @@ def _validate_traffic_calendar(df: pd.DataFrame, result: LoadedData) -> pd.DataF
 
 def _cross_validate(data: LoadedData) -> None:
     """Check referential integrity between datasets."""
+    # Check incidents vs release_history
     if data.release_history is not None and data.incidents is not None:
         release_ids = set(data.release_history["release_id"].dropna())
         incident_release_refs = set(data.incidents["related_release"].dropna())
@@ -285,9 +302,10 @@ def _cross_validate(data: LoadedData) -> None:
                 f"be linked to release metadata."
             )
 
+    # Check service_metrics vs slo_definitions
     if data.service_metrics is not None and data.slo_definitions is not None:
-        metric_services = set(data.service_metrics["service"].unique())
-        slo_services = set(data.slo_definitions["service"].unique())
+        metric_services = set(data.service_metrics["service"].dropna().unique())
+        slo_services = set(data.slo_definitions["service"].dropna().unique())
         no_slo = metric_services - slo_services
         if no_slo:
             data.warnings.append(
@@ -299,6 +317,17 @@ def _cross_validate(data: LoadedData) -> None:
             data.warnings.append(
                 f"slo_definitions: {len(no_metrics)} service(s) have an SLO but no metrics data: "
                 f"{sorted(no_metrics)}."
+            )
+
+    # Check release_history services vs slo_definitions
+    if data.release_history is not None and data.slo_definitions is not None:
+        rel_services = set(data.release_history["service"].dropna().unique())
+        slo_services = set(data.slo_definitions["service"].dropna().unique())
+        unknown_rel = rel_services - slo_services
+        if unknown_rel:
+            data.warnings.append(
+                f"release_history: {len(unknown_rel)} service(s) in release history have no SLO definition: "
+                f"{sorted(unknown_rel)}."
             )
 
 
